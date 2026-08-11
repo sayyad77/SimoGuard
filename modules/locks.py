@@ -161,3 +161,18 @@ def setup_locks(bot):
             message,
             "🔓 تم فتح جميع الأقفال."
         )
+
+    @bot.message_handler(func=lambda m: m.text and locks["روابط"])
+    def links_filter(message):
+
+        text = message.text.lower()
+
+        if "http://" in text or "https://" in text or "t.me/" in text or "www." in text:
+
+            try:
+                bot.delete_message(
+                    message.chat.id,
+                    message.message_id
+                )
+            except:
+                pass
