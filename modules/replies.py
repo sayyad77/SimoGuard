@@ -97,3 +97,14 @@ def setup_replies(bot):
         delete_reply(trigger)
 
         bot.reply_to(message, "🗑️ تم حذف الرد التلقائي.")
+
+    @bot.message_handler(func=lambda m: m.text is not None)
+    def automatic_reply(message):
+
+        response = get_reply(message.text.strip())
+
+        if response:
+            bot.reply_to(
+                message,
+                response
+            )
