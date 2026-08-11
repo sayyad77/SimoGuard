@@ -188,3 +188,17 @@ def setup_locks(bot):
                 )
             except:
                 pass
+
+    @bot.message_handler(func=lambda m: m.text and locks["روابط"])
+    def advanced_links_filter(message):
+
+        text = message.text.lower()
+
+        if "www." in text or "http://" in text or "https://" in text or "t.me/" in text or "@" in text:
+            try:
+                bot.delete_message(
+                    message.chat.id,
+                    message.message_id
+                )
+            except:
+                pass
