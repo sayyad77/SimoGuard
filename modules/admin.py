@@ -168,3 +168,39 @@ def setup_admin(bot):
             "✅ نظام الأقفال يعمل.\n"
             "✅ نظام التحذيرات يعمل."
         )
+
+    @bot.message_handler(func=lambda m: m.text in ["فك الكتم الكامل", "full unmute"])
+    def full_unmute(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        if not message.reply_to_message:
+            bot.reply_to(message, "⚠️ استخدم الأمر بالرد على العضو.")
+            return
+
+        try:
+            permissions = telebot.types.ChatPermissions(
+                can_send_messages=True,
+                can_send_audios=True,
+                can_send_documents=True,
+                can_send_photos=True,
+                can_send_videos=True,
+                can_send_video_notes=True,
+                can_send_voice_notes=True,
+                can_send_polls=True,
+                can_send_other_messages=True,
+                can_add_web_page_previews=True
+            )
+
+            bot.restrict_chat_member(
+                message.chat.id,
+                message.reply_to_message.from_user.id,
+                permissions
+            )
+
+            bot.reply_to(message, "🔊 تم فك الكتم بالكامل.")
+
+        except Exception:
+            bot.reply_to(message, "❌ لا أستطيع فك الكتم.")
