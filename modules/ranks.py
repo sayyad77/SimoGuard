@@ -107,3 +107,62 @@ def setup_ranks(bot):
                 message,
                 "❌ لا أستطيع جلب قائمة المشرفين."
             )
+
+    @bot.message_handler(func=lambda m: m.text in ["رفع مشرف", "promote mod"])
+    def promote_mod(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        if not message.reply_to_message:
+            bot.reply_to(message, "⚠️ استخدم الأمر بالرد على العضو.")
+            return
+
+        user_id = message.reply_to_message.from_user.id
+
+        try:
+            add_rank(user_id, "مشرف")
+            bot.reply_to(message, "👮 تم رفع العضو إلى مشرف.")
+        except:
+            bot.reply_to(message, "❌ تعذر رفع الرتبة.")
+
+
+    @bot.message_handler(func=lambda m: m.text in ["رفع مدير", "promote manager"])
+    def promote_manager(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        if not message.reply_to_message:
+            bot.reply_to(message, "⚠️ استخدم الأمر بالرد على العضو.")
+            return
+
+        user_id = message.reply_to_message.from_user.id
+
+        try:
+            add_rank(user_id, "مدير")
+            bot.reply_to(message, "👑 تم رفع العضو إلى مدير.")
+        except:
+            bot.reply_to(message, "❌ تعذر رفع الرتبة.")
+
+
+    @bot.message_handler(func=lambda m: m.text in ["تنزيل رتبة", "demote"])
+    def demote(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        if not message.reply_to_message:
+            bot.reply_to(message, "⚠️ استخدم الأمر بالرد على العضو.")
+            return
+
+        user_id = message.reply_to_message.from_user.id
+
+        try:
+            remove_rank(user_id)
+            bot.reply_to(message, "⬇️ تم تنزيل رتبة العضو.")
+        except:
+            bot.reply_to(message, "❌ تعذر تنزيل الرتبة.")
