@@ -176,3 +176,15 @@ def setup_locks(bot):
                 )
             except:
                 pass
+
+    @bot.message_handler(func=lambda m: m.content_type == "sticker")
+    def sticker_filter(message):
+
+        if locks["ملصقات"]:
+            try:
+                bot.delete_message(
+                    message.chat.id,
+                    message.message_id
+                )
+            except:
+                pass
