@@ -111,3 +111,33 @@ def setup_security(bot):
         if message.chat.id not in protection:
             settings = get_group_settings(message.chat.id)
             protection[message.chat.id] = settings["protection"]
+
+    @bot.message_handler(func=lambda m: m.chat.type in ["group", "supergroup"])
+    def spam_action(message):
+
+        if not protection.get(message.chat.id, False):
+            return
+
+        user_id = message.from_user.id
+
+        if warnings[user_id] >= 3:
+            try:
+                permissions = telebot.types.ChatPermissions(
+                    can_send_messages=False
+                )
+
+                bot.restrict_chat_member(
+                    message.chat.id,
+                    user_id,
+                    permissions
+                )
+
+                bot.send_message(
+                    message.chat.id,
+                    "🔇 تم كتم العضو بسبب تكرار السبام."
+                )
+
+                warnings[user_id] = 0
+
+            except:
+                pass
