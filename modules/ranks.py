@@ -82,3 +82,28 @@ def setup_ranks(bot):
             message,
             f"⭐ رتبتك: {rank or 'عضو'}"
         )
+
+    @bot.message_handler(func=lambda m: m.text in ["المشرفين", "admins"])
+    def admins_list(message):
+
+        try:
+            admins = bot.get_chat_administrators(message.chat.id)
+
+            text = "👮 مشرفو المجموعة:\n\n"
+
+            for admin in admins:
+                user = admin.user
+                name = user.first_name or "بدون اسم"
+
+                if user.username:
+                    name += f" (@{user.username})"
+
+                text += f"• {name}\n"
+
+            bot.reply_to(message, text)
+
+        except:
+            bot.reply_to(
+                message,
+                "❌ لا أستطيع جلب قائمة المشرفين."
+            )
