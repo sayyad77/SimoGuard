@@ -79,3 +79,74 @@ def get_reply(trigger):
         return result[0]
 
     return None
+
+# جدول إعدادات المجموعات
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS group_settings (
+    chat_id INTEGER PRIMARY KEY,
+    protection INTEGER DEFAULT 0,
+    links INTEGER DEFAULT 0,
+    photos INTEGER DEFAULT 0,
+    videos INTEGER DEFAULT 0,
+    stickers INTEGER DEFAULT 0
+)
+""")
+
+db.commit()
+
+
+def get_group_settings(chat_id):
+    cursor.execute(
+        "SELECT protection, links, photos, videos, stickers "
+        "FROM group_settings WHERE chat_id=?",
+        (chat_id,)
+    )
+
+    result = cursor.fetchone()
+
+    if result:
+        return {
+            "protection": bool(result[0]),
+            "links": bool(result[1]),
+            "photos": bool(result[2]),
+            "videos": bool(result[3]),
+            "stickers": bool(result[4])
+        }
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO group_settings "
+        "(chat_id, protection, links, photos, videos, stickers) "
+        "VALUES (?,0,0,0,0,0)",
+        (chat_id,)
+    )
+    db.commit()
+
+    return {
+        "protection": False,
+        "links": False,
+        "photos": False,
+        "videos": False,
+        "stickers": False
+    }
+
+
+def set_group_setting(chat_id, setting, value):
+
+    allowed = {
+        "protection",
+        "links",
+        "photos",
+        "videos",
+        "stickers"
+    }
+
+    if setting not in allowed:
+        return
+
+    get_group_settings(chat_id)
+
+    cursor.execute(
+        f"UPDATE group_settings SET {setting}=? WHERE chat_id=?",
+        (int(value), chat_id)
+    )
+    db.commit()

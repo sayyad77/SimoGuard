@@ -1,3 +1,4 @@
+from database import get_group_settings, set_group_setting
 import time
 from collections import defaultdict
 from permissions import can_manage
@@ -19,6 +20,7 @@ def setup_security(bot):
             return
 
         protection[message.chat.id] = True
+        set_group_setting(message.chat.id, "protection", True)
 
         bot.reply_to(
             message,
@@ -35,6 +37,7 @@ def setup_security(bot):
             return
 
         protection[message.chat.id] = False
+        set_group_setting(message.chat.id, "protection", False)
 
         bot.reply_to(
             message,
@@ -87,3 +90,17 @@ def setup_security(bot):
             )
 
             spam[spam_key] = []
+
+    @bot.message_handler(func=lambda m: m.text in ["حالة الحماية", "security status"])
+    def security_status(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        status = "🟢 مفعلة" if protection.get(message.chat.id, False) else "🔴 معطلة"
+
+        bot.reply_to(
+            message,
+            f"🛡️ حالة الحماية: {status}"
+        )

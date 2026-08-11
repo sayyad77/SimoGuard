@@ -1,3 +1,4 @@
+from database import get_group_settings, set_group_setting
 from permissions import can_manage
 
 
@@ -19,6 +20,7 @@ def setup_locks(bot):
             return
 
         locks["روابط"] = True
+        set_group_setting(message.chat.id, "links", True)
         bot.reply_to(message, "🔒 تم قفل الروابط.")
 
 
@@ -30,6 +32,7 @@ def setup_locks(bot):
             return
 
         locks["روابط"] = False
+        set_group_setting(message.chat.id, "links", False)
         bot.reply_to(message, "🔓 تم فتح الروابط.")
 
 
@@ -41,6 +44,7 @@ def setup_locks(bot):
             return
 
         locks["صور"] = True
+        set_group_setting(message.chat.id, "photos", True)
         bot.reply_to(message, "🔒 تم قفل الصور.")
 
 
@@ -52,6 +56,7 @@ def setup_locks(bot):
             return
 
         locks["صور"] = False
+        set_group_setting(message.chat.id, "photos", False)
         bot.reply_to(message, "🔓 تم فتح الصور.")
 
 
@@ -84,6 +89,7 @@ def setup_locks(bot):
             return
 
         locks["فيديو"] = True
+        set_group_setting(message.chat.id, "videos", True)
         bot.reply_to(message, "🔒 تم قفل الفيديو.")
 
     @bot.message_handler(func=lambda m: m.text in ["فتح الفيديو", "unlock video"])
@@ -104,6 +110,7 @@ def setup_locks(bot):
             return
 
         locks["ملصقات"] = True
+        set_group_setting(message.chat.id, "stickers", True)
         bot.reply_to(message, "🔒 تم قفل الملصقات.")
 
     @bot.message_handler(func=lambda m: m.text in ["فتح الملصقات", "unlock stickers"])
@@ -114,4 +121,26 @@ def setup_locks(bot):
             return
 
         locks["ملصقات"] = False
+        set_group_setting(message.chat.id, "stickers", False)
         bot.reply_to(message, "🔓 تم فتح الملصقات.")
+
+    @bot.message_handler(func=lambda m: m.text in ["حالة الأقفال", "locks status"])
+    def locks_status(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        links = "🔒" if locks["روابط"] else "🔓"
+        photos = "🔒" if locks["صور"] else "🔓"
+        videos = "🔒" if locks["فيديو"] else "🔓"
+        stickers = "🔒" if locks["ملصقات"] else "🔓"
+
+        bot.reply_to(
+            message,
+            "🛡️ حالة الأقفال:\n\n"
+            f"{links} الروابط\n"
+            f"{photos} الصور\n"
+            f"{videos} الفيديو\n"
+            f"{stickers} الملصقات"
+        )
