@@ -75,3 +75,43 @@ def setup_locks(bot):
                 )
             except:
                 pass
+
+    @bot.message_handler(func=lambda m: m.text in ["قفل الفيديو", "lock video"])
+    def lock_videos(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        locks["فيديو"] = True
+        bot.reply_to(message, "🔒 تم قفل الفيديو.")
+
+    @bot.message_handler(func=lambda m: m.text in ["فتح الفيديو", "unlock video"])
+    def unlock_videos(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        locks["فيديو"] = False
+        bot.reply_to(message, "🔓 تم فتح الفيديو.")
+
+    @bot.message_handler(func=lambda m: m.text in ["قفل الملصقات", "lock stickers"])
+    def lock_stickers(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        locks["ملصقات"] = True
+        bot.reply_to(message, "🔒 تم قفل الملصقات.")
+
+    @bot.message_handler(func=lambda m: m.text in ["فتح الملصقات", "unlock stickers"])
+    def unlock_stickers(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        locks["ملصقات"] = False
+        bot.reply_to(message, "🔓 تم فتح الملصقات.")

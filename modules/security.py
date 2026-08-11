@@ -7,11 +7,11 @@ def setup_security(bot):
 
     spam = defaultdict(list)
     warnings = defaultdict(int)
-
     protection = {}
 
-
-    @bot.message_handler(func=lambda m: m.text in ["تفعيل الحماية", "protection on"])
+    @bot.message_handler(
+        func=lambda m: m.text in ["تفعيل الحماية", "protection on"]
+    )
     def enable_security(message):
 
         if not can_manage(message.from_user.id):
@@ -25,8 +25,9 @@ def setup_security(bot):
             "🛡️ تم تفعيل الحماية."
         )
 
-
-    @bot.message_handler(func=lambda m: m.text in ["تعطيل الحماية", "protection off"])
+    @bot.message_handler(
+        func=lambda m: m.text in ["تعطيل الحماية", "protection off"]
+    )
     def disable_security(message):
 
         if not can_manage(message.from_user.id):
@@ -37,44 +38,52 @@ def setup_security(bot):
 
         bot.reply_to(
             message,
-            "❌ تم تعطيل الحماية."
+            "🔓 تم تعطيل الحماية."
         )
 
-
-    @bot.message_handler(func=lambda m: False)
+    @bot.message_handler(func=lambda m: True)
     def anti_spam(message):
 
         if not protection.get(message.chat.id, False):
             return
 
-        if not message.text:
+        if not message.from_user:
             return
 
-        user = message.from_user.id
+        # تجاهل أوامر المشرفين
+        if can_manage(message.from_user.id):
+            return
+
+        user_id = message.from_user.id
         now = time.time()
 
-        spam[user].append(now)
+        spam_key = (message.chat.id, user_id)
 
-        spam[user] = [
-            x for x in spam[user]
+        spam[spam_key].append(now)
+
+        spam[spam_key] = [
+            x for x in spam[spam_key]
             if now - x < 5
         ]
 
-        if len(spam[user]) >= 5:
+        if len(spam[spam_key]) >= 5:
 
-            warnings[user] += 1
+            warnings[spam_key] += 1
 
             try:
                 bot.delete_message(
                     message.chat.id,
                     message.message_id
                 )
-            except:
+            except Exception:
                 pass
+
+            count = warnings[spam_key]
 
             bot.send_message(
                 message.chat.id,
-                f"⚠️ تم تحذير العضو.\nالإنذارات: {warnings[user]}"
+                f"⚠️ تم تحذير العضو.\n"
+                f"الإنذارات: {count}"
             )
 
-            spam[user] = []
+            spam[spam_key] = []
