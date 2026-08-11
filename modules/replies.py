@@ -1,4 +1,5 @@
 from database import add_reply, delete_reply, get_reply
+from database import add_reply, delete_reply, get_reply
 from permissions import can_manage
 
 
@@ -62,3 +63,37 @@ def setup_replies(bot):
                 message,
                 response
             )
+
+    @bot.message_handler(func=lambda m: m.text and m.text.startswith("اضف رد "))
+    def add_auto_reply(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        data = message.text.replace("اضف رد ", "", 1).split("|", 1)
+
+        if len(data) != 2:
+            bot.reply_to(message, "⚠️ استخدم:\nاضف رد الكلمة | الرد")
+            return
+
+        trigger = data[0].strip()
+        response = data[1].strip()
+
+        add_reply(trigger, response)
+
+        bot.reply_to(message, "✅ تم إضافة الرد التلقائي.")
+
+
+    @bot.message_handler(func=lambda m: m.text and m.text.startswith("حذف رد "))
+    def delete_auto_reply(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        trigger = message.text.replace("حذف رد ", "", 1).strip()
+
+        delete_reply(trigger)
+
+        bot.reply_to(message, "🗑️ تم حذف الرد التلقائي.")
