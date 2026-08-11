@@ -144,3 +144,20 @@ def setup_locks(bot):
             f"{videos} الفيديو\n"
             f"{stickers} الملصقات"
         )
+
+    @bot.message_handler(func=lambda m: m.text in ["فتح الكل", "unlock all"])
+    def unlock_all(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        locks["روابط"] = False
+        locks["صور"] = False
+        locks["فيديو"] = False
+        locks["ملصقات"] = False
+
+        bot.reply_to(
+            message,
+            "🔓 تم فتح جميع الأقفال."
+        )

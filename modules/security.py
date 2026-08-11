@@ -104,3 +104,10 @@ def setup_security(bot):
             message,
             f"🛡️ حالة الحماية: {status}"
         )
+
+    @bot.message_handler(func=lambda m: m.chat.type in ["group", "supergroup"])
+    def load_saved_protection(message):
+
+        if message.chat.id not in protection:
+            settings = get_group_settings(message.chat.id)
+            protection[message.chat.id] = settings["protection"]

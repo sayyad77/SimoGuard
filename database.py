@@ -150,3 +150,40 @@ def set_group_setting(chat_id, setting, value):
         (int(value), chat_id)
     )
     db.commit()
+
+# جدول تحذيرات الأعضاء
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS warnings (
+    chat_id INTEGER,
+    user_id INTEGER,
+    count INTEGER DEFAULT 0,
+    PRIMARY KEY (chat_id, user_id)
+)
+""")
+
+db.commit()
+
+
+def get_warnings(chat_id, user_id):
+    cursor.execute(
+        "SELECT count FROM warnings WHERE chat_id=? AND user_id=?",
+        (chat_id, user_id)
+    )
+    result = cursor.fetchone()
+    return result[0] if result else 0
+
+
+def set_warnings(chat_id, user_id, count):
+    cursor.execute(
+        "INSERT OR REPLACE INTO warnings (chat_id, user_id, count) VALUES (?, ?, ?)",
+        (chat_id, user_id, count)
+    )
+    db.commit()
+
+
+def clear_warnings(chat_id, user_id):
+    cursor.execute(
+        "DELETE FROM warnings WHERE chat_id=? AND user_id=?",
+        (chat_id, user_id)
+    )
+    db.commit()
