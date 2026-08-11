@@ -153,3 +153,18 @@ def setup_admin(bot):
 
         except Exception:
             bot.reply_to(message, "❌ لا أستطيع فك التجميد.")
+
+    @bot.message_handler(func=lambda m: m.text in ["حالة البوت", "bot status"])
+    def bot_status(message):
+
+        if not can_manage(message.from_user.id):
+            bot.reply_to(message, "❌ ليس لديك صلاحية.")
+            return
+
+        bot.reply_to(
+            message,
+            "🛡️ SimoGuard يعمل بشكل طبيعي.\n"
+            "✅ نظام الإدارة يعمل.\n"
+            "✅ نظام الأقفال يعمل.\n"
+            "✅ نظام التحذيرات يعمل."
+        )
