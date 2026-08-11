@@ -70,3 +70,15 @@ def setup_ranks(bot):
             bot.reply_to(message, "✅ تم تنزيل رتبة العضو.")
         else:
             bot.reply_to(message, "⚠️ استخدم الأمر بالرد.")
+
+    @bot.message_handler(func=lambda m: m.text in ["رتبتي", "my rank"])
+    def my_rank(message):
+
+        from permissions import get_user_rank
+
+        rank = get_user_rank(message.from_user.id)
+
+        bot.reply_to(
+            message,
+            f"⭐ رتبتك: {rank or 'عضو'}"
+        )
