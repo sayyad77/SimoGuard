@@ -155,7 +155,5 @@ def mute_user(message):
         bot.reply_to(message, "⚠️ رد على رسالة العضو.")
 
 
-bot.infinity_polling(
-    timeout=60,
-    long_polling_timeout=60
-)
+bot.infinity_polling(skip_pending_updates=True)
+
