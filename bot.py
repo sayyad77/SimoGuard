@@ -154,5 +154,6 @@ def mute_user(message):
     else:
         bot.reply_to(message, "⚠️ رد على رسالة العضو.")
 
+bot.remove_webhook(drop_pending_updates=True)
 bot.infinity_polling()
 
