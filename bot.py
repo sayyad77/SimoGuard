@@ -39,6 +39,7 @@ print("SimoGuard Started...")
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    print(f"[LOG] Received message: {message.text} from {message.from_user.id}")#(message):
     if message.from_user.id == OWNER_ID:
         bot.reply_to(
             message,
